@@ -1,9 +1,13 @@
-const express = require('express')
+const express = require("express");
+const cors = require("cors");
 const { MongoClient } = require('mongodb');
-require('dotenv').config()
+const ObjectId = require("mongodb").ObjectId;
+require("dotenv").config();
+const app = express();
+const port = process.env.PORT || 5000;
 
-const app = express()
-const port = 5000;
+app.use(express.json());
+app.use(cors());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.swoyo.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
@@ -30,15 +34,15 @@ async function run() {
     //   res.send(cars);
     // });
 
-    //! GET SINGLE TOUR INFO
+    //! GET SINGLE CAR INFO
 
-    // app.get("/cars/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   console.log("getting specific tour", id);
-    //   const query = { _id: ObjectId(id) };
-    //   const tour = await carCollection.findOne(query);
-    //   res.json(tour);
-    // });
+    app.get("/cars/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("getting specific tour", id);
+      const query = { _id: ObjectId(id) };
+      const car = await carCollection.findOne(query);
+      res.json(car);
+    });
 
     //! ADD DATA TO CART
 
