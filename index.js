@@ -20,6 +20,7 @@ async function run() {
     const carCollection = database.collection("cars");
     const cartCollection = database.collection("cart");
     const usersCollection = database.collection("users");
+    const reviewCollection = database.collection("reviews");
 
     // GET ALL CAR INFO
 
@@ -39,6 +40,23 @@ async function run() {
       res.json(result);
     });
 
+    // ADD DATA TO CAR
+
+    app.post("/cars", async (req, res) => {
+      const car = req.body;
+      const result = await carCollection.insertOne(car);
+      res.json(result);
+    });
+
+    // DELETE DATA FROM CAR
+
+    app.delete("/cars/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await carCollection.deleteOne(query);
+      res.json(result);
+    });
+
     // GET ALL CART INFO
 
     app.get("/cart", async (req, res) => {
@@ -55,32 +73,48 @@ async function run() {
       res.json(result);
     });
 
-    //! GET USER'S CART DATA
+    // DELETE DATA FROM CART
 
-    // app.get("/cart/:uid", async (req, res) => {
-    //   const uid = req.params.uid;
-    //   const query = { uid: uid };
-    //   const result = await cartCollection.find(query).toArray();
-    //   res.json(result);
-    // });
+    app.delete("/cart/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await cartCollection.deleteOne(query);
+      res.json(result);
+    });
 
-    //! DELETE DATA FROM CART
+    // GET ALL REVIEW INFO
 
-    // app.delete("/delete/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const result = await cartCollection.deleteOne(query);
-    //   res.json(result);
-    // });
+    app.get("/review", async (req, res) => {
+      const cursor = reviewCollection.find({});
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
-    //post user to usersCollection
+    // ADD DATA TO REVIEW
+
+    app.post("/review", async (req, res) => {
+      const tour = req.body;
+      const result = await reviewCollection.insertOne(tour);
+      res.json(result);
+    });
+
+    // GET USER'S CART DATA
+
+    app.get("/cart/:uid", async (req, res) => {
+      const uid = req.params.uid;
+      const query = { uid: uid };
+      const result = await cartCollection.find(query).toArray();
+      res.json(result);
+    });
+
+    // ADD USER
     app.post("/users", async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
       res.json(result);
     });
 
-    //findOut unique email
+    // FIND UNIQUE EMAIL
     app.put("/users", async (req, res) => {
       const user = req.body;
       const filter = { email: user.email };
@@ -94,7 +128,7 @@ async function run() {
       res.json(result);
     });
 
-    //make admin a user
+    // MAKE ADMIN
     app.put("/users/admin", async (req, res) => {
       const user = req.body;
       // console.log('put',user);
@@ -104,7 +138,7 @@ async function run() {
           res.json(result);
       });
 
-      //get user through email
+      // GET USER BY EMAIL
       app.get("/users/:email", async (req, res) => {
         const email = req.params.email;
         const query = { email: email };
