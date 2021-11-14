@@ -1,8 +1,10 @@
-const express = require("express");
 const cors = require("cors");
+const express = require("express");
 const { MongoClient } = require('mongodb');
 const ObjectId = require("mongodb").ObjectId;
+
 require("dotenv").config();
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -34,7 +36,6 @@ async function run() {
 
     app.get("/cars/:id", async (req, res) => {
       const id = req.params.id;
-      console.log("getting specific tour", id);
       const query = { _id: ObjectId(id) };
       const result = await carCollection.findOne(query);
       res.json(result);
@@ -65,11 +66,20 @@ async function run() {
       res.send(result);
     });
 
+    // GET USER'S CART DATA
+
+    app.get("/cart/:uid", async (req, res) => {
+      const uid = req.params.uid;
+      const query = { uid: uid };
+      const result = await cartCollection.find(query).toArray();
+      res.json(result);
+    });
+
     // ADD DATA TO CART
 
     app.post("/cart", async (req, res) => {
-      const tour = req.body;
-      const result = await cartCollection.insertOne(tour);
+      const car = req.body;
+      const result = await cartCollection.insertOne(car);
       res.json(result);
     });
 
@@ -93,17 +103,8 @@ async function run() {
     // ADD DATA TO REVIEW
 
     app.post("/review", async (req, res) => {
-      const tour = req.body;
-      const result = await reviewCollection.insertOne(tour);
-      res.json(result);
-    });
-
-    // GET USER'S CART DATA
-
-    app.get("/cart/:uid", async (req, res) => {
-      const uid = req.params.uid;
-      const query = { uid: uid };
-      const result = await cartCollection.find(query).toArray();
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
       res.json(result);
     });
 
